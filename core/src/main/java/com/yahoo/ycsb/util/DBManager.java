@@ -106,4 +106,15 @@ public class DBManager {
 		}
 		return null;
 	}
+
+	public void executePreparedUpdate(String q, String args) {
+		try {
+			PreparedStatement s = conn.prepareStatement(q);
+			s.setString(1, args);
+			s.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite hostname="dhcp-26-121.brq.redhat.com" name="com.yahoo.ycsb.TestByteIterator" tests="1" failures="0" timestamp="1 Apr 2013 05:07:32 GMT" time="0.039" errors="0">
+  <testcase name="testRandomByteIterator" time="0.018" classname="com.yahoo.ycsb.TestByteIterator"/>
+</testsuite>

@@ -406,7 +406,6 @@ public class Client {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public static void main(String[] args) {
 		String dbname;
 		Properties props = new Properties();
@@ -563,7 +562,7 @@ public class Client {
 		}
 
 		System.out.println("YCSB Client 0.1");
-		System.out.print("Command line:fdsfad");
+		System.out.print("Commands:");
 
 		// if no destination file is provided the results will be written to
 		// stdout
@@ -594,12 +593,13 @@ public class Client {
 		}
 
 		// log config to DB if exporter is specified
-		System.out.println("This was called.");
+		String arg = "";
 		for (int i = 0; i < args.length; i++) {
 			System.out.print(" " + args[i]);
-			if (exporterStr.contains("JDBCMeasurementsExporter")) {
-				((JDBCMeasurementsExporter) exporter).writeConfig(args[i]);
-			}
+			arg += args[i] + " ";
+		}
+		if (exporterStr.contains("JDBCMeasurementsExporter")) {
+			((JDBCMeasurementsExporter) exporter).writeConfig(arg);
 		}
 
 		// show a warning message that creating the workload is taking a while
@@ -650,9 +650,6 @@ public class Client {
 		warningthread.interrupt();
 
 		// run the workload
-
-		System.err.println("Starting test.");
-
 		int opcount;
 		if (dotransactions) {
 			opcount = Integer.parseInt(props.getProperty(

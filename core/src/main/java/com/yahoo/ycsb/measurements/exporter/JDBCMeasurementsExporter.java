@@ -17,13 +17,11 @@ public class JDBCMeasurementsExporter implements MeasurementsExporter {
 
 	public JDBCMeasurementsExporter(OutputStream os) {
 		this.db = new DBManager();
-		System.out.println("Exporter created.");
 		db.connect();
 		db.initDB();
 	}
 
 	private void execute(String metric, String measurement, Object o) {
-		System.out.println("execute");
 		String q = "";
 		if ("OVERALL".equals(metric)) {
 			if (measurement.startsWith("RunTime")) {
@@ -105,9 +103,9 @@ public class JDBCMeasurementsExporter implements MeasurementsExporter {
 					+ ");";
 			runId = db.executeUpdate(q);
 		}
-		q = "INSERT INTO configurations (run_id, args) VALUES (" + runId + ", "
-				+ arg + ");";
-		db.executeUpdate(q);
+		q = "INSERT INTO configurations (run_id, arg) VALUES (" + runId
+				+ ", ?);";
+		db.executePreparedUpdate(q, arg);
 	}
 
 	public void close() throws IOException {
