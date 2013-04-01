@@ -17,21 +17,23 @@ public class JDBCMeasurementsExporter implements MeasurementsExporter {
 
 	public JDBCMeasurementsExporter(OutputStream os) {
 		this.db = new DBManager();
+		System.out.println("Exporter created.");
 		db.connect();
 		db.initDB();
 	}
 
 	private void execute(String metric, String measurement, Object o) {
+		System.out.println("execute");
 		String q = "";
 		if ("OVERALL".equals(metric)) {
 			if (measurement.startsWith("RunTime")) {
-				q = "INSERT INTO runs (runtime) VALUES (" + (Double) o + ");";
-				runId = db.executeUpdate(q);
+				q = "UPDATE runs SET runtime=" + (Double) o + " WHERE id="
+						+ runId + ";";
 			} else if (measurement.startsWith("Throughput")) {
 				q = "UPDATE runs SET throughput=" + (Double) o + " WHERE id="
 						+ runId + ";";
-				db.executeUpdate(q);
 			}
+			db.executeUpdate(q);
 		} else if ("UPDATE".equals(metric) || "READ".equals(metric)
 				|| "CLEANUP".equals(metric)) {
 			if (measurement.startsWith("Operations")) {
@@ -93,6 +95,19 @@ public class JDBCMeasurementsExporter implements MeasurementsExporter {
 			throws IOException {
 		execute(metric, measurement, (Double) d);
 		System.out.println("[" + metric + "], " + measurement + ", " + d);
+	}
+
+	public void writeConfig(String arg) {
+		// is called before exportMeasurements from the client
+		String q = null;
+		if (runId == null) {
+			q = "INSERT INTO runs (runtime) VALUES (" + Double.valueOf(0)
+					+ ");";
+			runId = db.executeUpdate(q);
+		}
+		q = "INSERT INTO configurations (run_id, args) VALUES (" + runId + ", "
+				+ arg + ");";
+		db.executeUpdate(q);
 	}
 
 	public void close() throws IOException {

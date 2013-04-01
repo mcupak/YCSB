@@ -20,9 +20,11 @@ public class DBManager {
 	private static final String DROP_RUNS_QUERY = "DROP TABLE IF EXISTS runs;";
 	private static final String DROP_WORKLOADS_QUERY = "DROP TABLE IF EXISTS workloads;";
 	private static final String DROP_OPERATIONS_QUERY = "DROP TABLE IF EXISTS operations;";
+	private static final String DROP_CONFIGURATIONS_QUERY = "DROP TABLE IF EXISTS configurations;";
 	private static final String CREATE_RUNS_QUERY = "CREATE TABLE runs (id BIGINT NOT NULL AUTO_INCREMENT, runtime DOUBLE PRECISION, throughput DOUBLE PRECISION, t TIMESTAMP, PRIMARY KEY (id));";
 	private static final String CREATE_WORKLOADS_QUERY = "CREATE TABLE workloads (id BIGINT NOT NULL AUTO_INCREMENT, run_id BIGINT NOT NULL, type INT NOT NULL, operations INT, avglat DOUBLE PRECISION, minlat INT, maxlat INT, 95lat INT, 99lat INT, 0return INT, PRIMARY KEY (id), FOREIGN KEY(run_id) REFERENCES runs(id));";
 	private static final String CREATE_OPERATIONS_QUERY = "CREATE TABLE operations (id BIGINT NOT NULL AUTO_INCREMENT, workload_id BIGINT NOT NULL, tm INT, ct INT, PRIMARY KEY (id), FOREIGN KEY(workload_id) REFERENCES workloads(id));";
+	private static final String CREATE_CONFIGURATIONS_QUERY = "CREATE TABLE configurations (id BIGINT NOT NULL AUTO_INCREMENT, run_id BIGINT NOT NULL, arg VARCHAR(500), PRIMARY KEY (id), FOREIGN KEY(run_id) REFERENCES runs(id));";
 
 	private Connection conn = null;
 
@@ -47,11 +49,15 @@ public class DBManager {
 			s.execute();
 			s = conn.prepareStatement(DROP_OPERATIONS_QUERY);
 			s.execute();
+			s = conn.prepareStatement(DROP_CONFIGURATIONS_QUERY);
+			s.execute();
 			s = conn.prepareStatement(CREATE_RUNS_QUERY);
 			s.execute();
 			s = conn.prepareStatement(CREATE_WORKLOADS_QUERY);
 			s.execute();
 			s = conn.prepareStatement(CREATE_OPERATIONS_QUERY);
+			s.execute();
+			s = conn.prepareStatement(CREATE_CONFIGURATIONS_QUERY);
 			s.execute();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
