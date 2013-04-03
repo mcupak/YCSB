@@ -1,21 +1,19 @@
 package com.yahoo.ycsb.util;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Properties;
 
 public class DBManager {
-	// JDBC driver name and database URL
-	public static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-	public static final String DB_URL = "jdbc:mysql://localhost/test";
-
-	// Database credentials
-	public static final String USER = "";
-	public static final String PASS = "";
-
 	// queries
 	private static final String DROP_RUNS_QUERY = "DROP TABLE IF EXISTS runs;";
 	private static final String DROP_WORKLOADS_QUERY = "DROP TABLE IF EXISTS workloads;";
@@ -27,6 +25,25 @@ public class DBManager {
 	private static final String CREATE_CONFIGURATIONS_QUERY = "CREATE TABLE configurations (id BIGINT NOT NULL AUTO_INCREMENT, run_id BIGINT NOT NULL, arg VARCHAR(500), PRIMARY KEY (id), FOREIGN KEY(run_id) REFERENCES runs(id));";
 
 	private Connection conn = null;
+	Properties prop = null;
+
+	public DBManager() {
+		prop = new Properties();
+		InputStream in = null;
+		try {
+			in = this.getClass().getResourceAsStream("/db.properties");
+			prop.load(in);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				in.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
 
 	public boolean isConnected() {
 		if (conn == null)
@@ -67,8 +84,9 @@ public class DBManager {
 
 	public void connect() {
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+			Class.forName(prop.getProperty("jdbc.driver"));
+			conn = DriverManager.getConnection(prop.getProperty("db.url"),
+					prop.getProperty("db.user"), prop.getProperty("db.passwd"));
 		} catch (SQLException se) {
 			// Handle errors for JDBC
 			se.printStackTrace();
